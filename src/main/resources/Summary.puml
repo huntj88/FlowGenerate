@@ -1,0 +1,11 @@
+@startuml
+
+GatherData : val books: List<Book>
+
+[*] -> GatherData
+GatherData --> Render
+Render --> Back
+Render -> BookSelected
+BookSelected -> Render
+
+@enduml
