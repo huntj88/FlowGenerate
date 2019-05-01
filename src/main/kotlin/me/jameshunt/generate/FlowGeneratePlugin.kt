@@ -29,7 +29,7 @@ class FlowGeneratePlugin : Plugin<Project> {
         File("./$projectName/src/main")
             .walk()
             .filter { it.extension == "puml" }
-            .forEach { FlowGenerator(it).generate() }
+            .forEach { FlowGenerator(it).generate(generatedSrcPath) }
     }
 
     private fun addSourceSet(project: Project) {
@@ -37,7 +37,7 @@ class FlowGeneratePlugin : Plugin<Project> {
         sourceSets.forEach { sourceSetName, sourceSet ->
 
             if (sourceSetName == "main") {
-                val generatedSrcPathSrcSet = "./build/generated/source/L10n/src"
+                val generatedSrcPathSrcSet = "./build/generated/source/flow/src"
                 sourceSet.java.srcDirs(File(generatedSrcPathSrcSet))
                 return@forEach
             }

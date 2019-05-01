@@ -4,7 +4,7 @@ import java.io.File
 
 class FlowGenerator(private val file: File) {
 
-    fun generate() {
+    fun generate(generatedSrcPath: String) {
         val (states, inputOutput) = PumlParser().parse(file)
         val (input, output) = inputOutput
 
@@ -20,7 +20,7 @@ class FlowGenerator(private val file: File) {
 
         val toMethods = MethodsGenerator().generateToMethods(flowName, states)
 
-        """
+        val classText = """
             $imports
             $generatedClass
             $sealedClass
@@ -28,7 +28,9 @@ class FlowGenerator(private val file: File) {
             $startMethod
             $toMethods
             }
-        """.let(::println)
+        """
+
+        File("$generatedSrcPath/Generated${flowName}Controller.kt").writeText(classText)
     }
 }
 
