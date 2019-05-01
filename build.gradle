@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.0'
+    }
+}
+
+
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.11'
 }
@@ -6,10 +16,13 @@ group 'me.jameshunt'
 version '1.0-SNAPSHOT'
 
 repositories {
+    google()
     mavenCentral()
 }
 
 dependencies {
+    compileOnly gradleApi()
+    compileOnly "com.android.tools.build:gradle:3.4.0"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     testImplementation 'junit:junit:4.12'
 }

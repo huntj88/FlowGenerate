@@ -1,21 +1,24 @@
-package me.jameshunt.flowgenerate
+package me.jameshunt.generate
 
 import java.io.File
 
+
+private val transitionRegex = "(\\S+)\\s*[-]+>\\s*(\\S+)".toRegex()
+private val dataRegex = "([a-zA-Z]+)\\s*:\\s*((val|var) [a-zA-Z]+: \\S+)".toRegex()
+private val packageRegex = ": (\\S+)".toRegex()
+
+fun String.isTransition() = this.contains(transitionRegex)
+fun String.isData() = this.contains(dataRegex)
+fun String.getPackage(): String = packageRegex.find(this)!!.groups[1]!!.value
+
 class PumlParser {
-
-    private val transitionRegex = "(\\S+)\\s*[-]+>\\s*(\\S+)".toRegex()
-    private val dataRegex = "([a-zA-Z]+)\\s*:\\s*((val|var) [a-zA-Z]+: [a-zA-Z]+)".toRegex()
-
-    fun String.isTransition() = this.contains(transitionRegex)
-    fun String.isData() = this.contains(dataRegex)
 
     sealed class LineType {
         data class Transition(val line: String) : LineType()
         data class Data(val line: String) : LineType()
     }
 
-    fun parse(file: File): Set<State> {
+    fun parse(file: File): StateSet {
         val lines = file.readLines().mapNotNull {
             when {
                 it.isTransition() -> LineType.Transition(it)
@@ -27,10 +30,23 @@ class PumlParser {
         val dataLines = lines.mapNotNull { it as? LineType.Data }
         val transitionLines = lines.mapNotNull { it as? LineType.Transition }
 
-        return transitionLines
+        val states = transitionLines
             .identifyStates()
             .addVariables(dataLines)
             .addFrom(transitionLines)
+
+        val inputOutput = states.inputOutput()
+        return StateSet(states, inputOutput)
+    }
+
+    private fun Set<State>.inputOutput(): Pair<String, String> {
+        val input = this.first { it.from.contains("[*]") }.variables.firstOrNull()?.let {
+            it.split(" ").last()
+        }?: "Unit"
+        val output = this.firstOrNull { it.name == "Done" }?.variables?.firstOrNull()?.let {
+            it.split(" ").last()
+        }?: "Unit"
+        return Pair(input,output)
     }
 
     private fun List<LineType.Transition>.identifyStates(): Set<State> {
@@ -43,7 +59,7 @@ class PumlParser {
             }
             .flatten()
             .fold(setOf()) { acc, stateName ->
-                acc + State(name = stateName, variables = setOf(), from = setOf())
+                acc + State(name = stateName, variables = setOf(), from = setOf(), imports = setOf())
             }
     }
 
@@ -51,11 +67,15 @@ class PumlParser {
         val statesWithVariables = lines
             .map { stateData ->
                 val stateName = dataRegex.find(stateData.line)!!.groups[1]?.value!!
-                val variable = dataRegex.find(stateData.line)!!.groups[2]?.value!!
+
+                val variableWithPackage = dataRegex.find(stateData.line)!!.groups[2]?.value!!
+                val packageName = variableWithPackage.getPackage()
+                val variableSimpleType = variableWithPackage.split(".").last()
+                val variableName = variableWithPackage.replace(packageName, variableSimpleType)
 
                 this
                     .first { it.name == stateName }
-                    .let { it.copy(variables = it.variables + variable) }
+                    .let { it.copy(variables = it.variables + variableName, imports = it.imports + packageName) }
             }
             .map { Pair(it.name, it) }
             .toMap()

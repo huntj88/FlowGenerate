@@ -1,9 +1,9 @@
-package me.jameshunt.flowgenerate
+package me.jameshunt.generate
 
 import org.junit.Assert.*
 import org.junit.Test
 
-class FlowGeneratorKtTest {
+class FlowGeneratorTest {
 
     @Test
     fun isTransitionTest() {
@@ -23,6 +23,13 @@ class FlowGeneratorKtTest {
         assertTrue("GatherData:val blah: Book".isData())
         assertTrue("GatherData:var blah: Book".isData())
         assertTrue("GatherData: var blah: Book".isData())
+        assertTrue("Render : val data: me.jameshunt.flow3.summary.SummaryInput".isData())
         assertFalse("GatherData val blah: Book".isData())
+    }
+
+    @Test
+    fun packageNameTest() {
+        "val data: me.jameshunt.flow3.summary.SummaryInput".getPackage().let(::println)
+        assertTrue("val data: me.jameshunt.flow3.summary.SummaryInput".getPackage() == "me.jameshunt.flow3.summary.SummaryInput")
     }
 }
