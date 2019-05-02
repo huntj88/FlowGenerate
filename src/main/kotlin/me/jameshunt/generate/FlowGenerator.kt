@@ -10,15 +10,15 @@ class FlowGenerator(private val file: File) {
 
         val flowName = file.nameWithoutExtension
 
-        val imports = ImportsGenerator().generate(states)
+        val imports = ImportsGenerator().generate(flowName, states)
 
         val generatedClass =
             "abstract class Generated${flowName}Controller(viewId: ViewId): FragmentFlowController<$input, $output>(viewId) {"
         val sealedClass = SealedClassGenerator().generate(flowName, states, output)
-        val abstractMethods = MethodsGenerator().generateAbstract(flowName, states)
-        val startMethod = MethodsGenerator().generateStart(flowName, states, input)
+        val abstractMethods = MethodsGenerator().generateAbstract(states)
+        val startMethod = MethodsGenerator().generateStart(states, input)
 
-        val toMethods = MethodsGenerator().generateToMethods(flowName, states)
+        val toMethods = MethodsGenerator().generateToMethods(states)
 
         val classText = """
             $imports

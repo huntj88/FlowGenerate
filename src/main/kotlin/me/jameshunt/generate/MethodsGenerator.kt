@@ -2,26 +2,25 @@ package me.jameshunt.generate
 
 class MethodsGenerator {
 
-    fun generateAbstract(flowName: String, states: Set<State>): String {
+    fun generateAbstract(states: Set<State>): String {
         return states
             .filter { it.name != "[*]" }
             .filter { it.name != "Done" }
             .filter { it.name != "Back" }
             .joinToString("\n") {
-                "protected abstract fun on${it.name}(state: ${flowName}FlowState.${it.name}): Promise<${flowName}FlowState.From${it.name}>"
+                "protected abstract fun on${it.name}(state: ${it.name}): Promise<From${it.name}>"
             }
     }
 
     fun generateStart(
-        flowName: String,
         states: Set<State>,
         input: String
     ): String {
         val from = states.firstOrNull { it.from.contains("[*]") }?.name!!
 
         val impl = when(input == "Unit") {
-            true -> "to$from(${flowName}FlowState.$from)"
-            false -> "to$from(${flowName}FlowState.$from(state.input))"
+            true -> "to$from($from)"
+            false -> "to$from($from(state.input))"
         }
 
         return """
@@ -31,19 +30,19 @@ class MethodsGenerator {
         """
     }
 
-    fun generateToMethods(flowName: String, states: Set<State>): String {
+    fun generateToMethods(states: Set<State>): String {
         return states
             .filter { it.name != "[*]" }
             .filter { it.name != "Done" }
             .filter { it.name != "Back" }
             .joinToString("") {
-                it.generateToMethod(flowName, states.fromWhen(flowName, it))
+                it.generateToMethod(states.fromWhen(it))
             }
     }
 
-    private fun State.generateToMethod(flowName: String, fromWhen: String): String {
+    private fun State.generateToMethod(fromWhen: String): String {
         return """
-            private fun to${this.name}(state: ${flowName}FlowState.${this.name}) {
+            private fun to${this.name}(state: ${this.name}) {
                 currentState = state
                 on${this.name}(state).then {
                     when(it) {
@@ -55,7 +54,7 @@ class MethodsGenerator {
         """
     }
 
-    private fun Set<State>.fromWhen(flowName: String, state: State): String {
+    private fun Set<State>.fromWhen(state: State): String {
 
         fun String.handleBackAndDone(): String {
             return when(this) {
@@ -66,7 +65,7 @@ class MethodsGenerator {
         }
 
         return this.filter { it.from.contains(state.name) }.joinToString("\n") {
-            "is ${flowName}FlowState.${it.name} -> ${it.name.handleBackAndDone()}"
+            "is ${it.name} -> ${it.name.handleBackAndDone()}"
         }
     }
 }

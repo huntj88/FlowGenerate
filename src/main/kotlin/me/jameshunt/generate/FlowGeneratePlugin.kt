@@ -9,7 +9,7 @@ class FlowGeneratePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         println("apply flow")
-        val generatedSrcPath = "./${project.name}/build/generated/source/flow/src"
+        val generatedSrcPath = "./${project.name}/build/generated/source/flow/src/me/jameshunt/flow/generated"
 
         setupGeneratedSourceDirectory(generatedSrcPath)
 
@@ -37,8 +37,7 @@ class FlowGeneratePlugin : Plugin<Project> {
         sourceSets.forEach { sourceSetName, sourceSet ->
 
             if (sourceSetName == "main") {
-                val generatedSrcPathSrcSet = "./build/generated/source/flow/src"
-                sourceSet.java.srcDirs(File(generatedSrcPathSrcSet))
+                sourceSet.java.srcDirs(File("./build/generated/source/flow/src"))
                 return@forEach
             }
         }
