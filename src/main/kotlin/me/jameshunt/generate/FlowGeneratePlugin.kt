@@ -9,27 +9,10 @@ class FlowGeneratePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         println("apply flow")
-        val generatedSrcPath = "./${project.name}/build/generated/source/flow/src/me/jameshunt/flow/generated"
 
-        setupGeneratedSourceDirectory(generatedSrcPath)
-
-        generateCode(project.name, generatedSrcPath)
+        FlowGenerator().generate(project.name)
 
         addSourceSet(project)
-    }
-
-    private fun setupGeneratedSourceDirectory(generatedSrcPath: String) {
-        val generatedSourceFolder = File(generatedSrcPath)
-
-        if (generatedSourceFolder.exists()) return
-        generatedSourceFolder.mkdirs()
-    }
-
-    private fun generateCode(projectName: String, generatedSrcPath: String) {
-        File("./$projectName/src/main")
-            .walk()
-            .filter { it.extension == "puml" }
-            .forEach { FlowGenerator(it).generate(generatedSrcPath) }
     }
 
     private fun addSourceSet(project: Project) {

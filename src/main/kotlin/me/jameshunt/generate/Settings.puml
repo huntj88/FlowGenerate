@@ -1,0 +1,19 @@
+@startuml
+
+[*] -> Settings
+
+Settings --> UserSettings
+Settings --> Logout
+Settings --> Back
+
+Settings --> NotLoggedIn
+UserSettings --> Settings
+
+Logout --> Settings
+
+NotLoggedIn --> Login
+NotLoggedIn --> Back
+
+Login --> Settings
+
+@enduml
