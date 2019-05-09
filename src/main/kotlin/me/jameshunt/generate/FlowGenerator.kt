@@ -1,29 +1,21 @@
 package me.jameshunt.generate
 
 import java.io.File
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-class FlowGenerator {
+open class FlowGenerator: DefaultTask() {
 
-    fun generate(projectName: String) {
-        val generatedSrcPath = "./$projectName/build/generated/source/flow/src/me/jameshunt/flow/generated"
-
-        setupGeneratedSourceDirectory(generatedSrcPath)
-
-        generateCode(projectName, generatedSrcPath)
+    @TaskAction
+    fun generate() {
+        generateCode()
     }
 
-    private fun setupGeneratedSourceDirectory(generatedSrcPath: String) {
-        val generatedSourceFolder = File(generatedSrcPath)
-
-        if (generatedSourceFolder.exists()) return
-        generatedSourceFolder.mkdirs()
-    }
-
-    private fun generateCode(projectName: String, generatedSrcPath: String) {
-        File("./$projectName/src/main")
+    private fun generateCode() {
+        File("./${this.project.name}/src/main")
             .walk()
             .filter { it.extension == "puml" }
-            .forEach { FlowCodeGenerator(it).generate(generatedSrcPath) }
+            .forEach { FlowCodeGenerator(it).generate(this.project.generatedSourcePath()) }
     }
 
 }

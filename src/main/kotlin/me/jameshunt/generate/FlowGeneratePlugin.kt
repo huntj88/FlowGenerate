@@ -10,9 +10,17 @@ class FlowGeneratePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         println("apply flow")
 
-        FlowGenerator().generate(project.name)
-
+        setupGeneratedSourceDirectory(project)
         addSourceSet(project)
+
+        project.tasks.create("flowGenerate", FlowGenerator::class.java)
+    }
+
+    private fun setupGeneratedSourceDirectory(project: Project) {
+        val generatedSourceFolder = File(project.generatedSourcePath())
+
+        if (generatedSourceFolder.exists()) return
+        generatedSourceFolder.mkdirs()
     }
 
     private fun addSourceSet(project: Project) {
@@ -26,3 +34,5 @@ class FlowGeneratePlugin : Plugin<Project> {
         }
     }
 }
+
+fun Project.generatedSourcePath() = "./${this.name}/build/generated/source/flow/src/me/jameshunt/flow/generated"
