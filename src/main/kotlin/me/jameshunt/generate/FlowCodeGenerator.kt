@@ -13,7 +13,7 @@ class FlowCodeGenerator(private val file: File) {
         val imports = ImportsGenerator().generate(flowName, states)
 
         val generatedClass =
-            "abstract class Generated${flowName}Controller(viewId: ViewId): FragmentFlowController<$input, $output>(viewId) {"
+            "abstract class Generated${flowName}Controller: FragmentFlowController<$input, $output>() {"
         val sealedClass = SealedClassGenerator().generate(flowName, states, output)
         val abstractMethods = MethodsGenerator().generateAbstract(states)
         val startMethod = MethodsGenerator().generateStart(states, input)
