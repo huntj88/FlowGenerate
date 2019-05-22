@@ -3,7 +3,27 @@ package me.jameshunt.generate
 class ImportsGenerator {
 
     fun generate(flowName: String, states: Set<State>): String {
-       val variables =  states
+
+        //todo: add the rest of kotlin builtIns
+        //todo: make types with generics work
+        val skipImport = listOf("Unit", "String", "Int", "Boolean", "Float", "Double", "Char", "Byte", "ByteArray")
+
+        val variables = states
+            .filter { state ->
+                // check that its not a builtin
+                val typeNames = state.variables
+                    .map {
+                        // get type, and remove question mark
+                        it.split(" ").last().takeWhile { it != '?' }
+                    }
+
+                skipImport
+                    .intersect(typeNames)
+                    .also {
+                        println(it)
+                    }
+                    .isEmpty()
+            }
             .flatMap { it.imports }.toSet()
             .joinToString("\n") { "import $it" }
 

@@ -7,6 +7,6 @@ class FlowGeneratorTest {
 
     @Test
     fun testGenerate() {
-        FlowGenerator().generate("FlowGenerate")
+        generateCodeTest()
     }
 }

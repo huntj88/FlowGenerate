@@ -42,11 +42,11 @@ class PumlParser {
     private fun Set<State>.inputOutput(): Pair<String, String> {
         val input = this.first { it.from.contains("[*]") }.variables.firstOrNull()?.let {
             it.split(" ").last()
-        }?: "Unit"
+        } ?: "Unit"
         val output = this.firstOrNull { it.name == "Done" }?.variables?.firstOrNull()?.let {
             it.split(" ").last()
-        }?: "Unit"
-        return Pair(input,output)
+        } ?: "Unit"
+        return Pair(input, output)
     }
 
     private fun List<LineType.Transition>.identifyStates(): Set<State> {
@@ -70,12 +70,21 @@ class PumlParser {
 
                 val variableWithPackage = dataRegex.find(stateData.line)!!.groups[2]?.value!!
                 val packageName = variableWithPackage.getPackage()
-                val variableSimpleType = variableWithPackage.split(".").last()
+                val variableSimpleType = variableWithPackage
+                    .split(":").last() // get only the type after keyword and variable name
+                    .split(" ").last() // remove leading space if any
+                    .split(".").last() // remove fully qualified package
+
                 val variableName = variableWithPackage.replace(packageName, variableSimpleType)
 
                 this
                     .first { it.name == stateName }
-                    .let { it.copy(variables = it.variables + variableName, imports = it.imports + packageName) }
+                    .let {
+                        it.copy(
+                            variables = it.variables + variableName,
+                            imports = it.imports + packageName.takeWhile { it != '?' } // remove question mark
+                        )
+                    }
             }
             .map { Pair(it.name, it) }
             .toMap()
@@ -101,7 +110,7 @@ class PumlParser {
                 }
             }
             .forEach {
-                val existing  = existingStates[it.name]
+                val existing = existingStates[it.name]
                 existingStates[it.name] = existing!!.copy(from = existing.from + it.from)
             }
 

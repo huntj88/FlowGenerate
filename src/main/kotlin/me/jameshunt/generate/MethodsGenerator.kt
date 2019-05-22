@@ -47,11 +47,12 @@ class MethodsGenerator {
                 on${this.name}(state).then {
                     when(it) {
                         $fromWhen
-                        else -> throw IllegalStateException("Illegal transition from: ${"$"}state, to: ${"$"}it")
                     }
                 }
             }
         """
+
+//        else -> throw IllegalStateException("Illegal transition from: ${"$"}state, to: ${"$"}it")
     }
 
     private fun Set<State>.fromWhen(state: State): String {
