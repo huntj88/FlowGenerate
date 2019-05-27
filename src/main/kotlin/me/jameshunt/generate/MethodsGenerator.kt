@@ -44,7 +44,7 @@ class MethodsGenerator {
         return """
             private fun to${this.name}(state: ${this.name}) {
                 currentState = state
-                on${this.name}(state).then {
+                on${this.name}(state).map {
                     when(it) {
                         $fromWhen
                     }

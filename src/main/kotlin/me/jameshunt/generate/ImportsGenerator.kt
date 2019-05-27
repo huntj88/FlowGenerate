@@ -19,9 +19,6 @@ class ImportsGenerator {
 
                 skipImport
                     .intersect(typeNames)
-                    .also {
-                        println(it)
-                    }
                     .isEmpty()
             }
             .flatMap { it.imports }.toSet()
@@ -30,10 +27,9 @@ class ImportsGenerator {
         return """
             package me.jameshunt.flow.generated
 
+            import com.inmotionsoftware.promisekt.Promise
+            import com.inmotionsoftware.promisekt.map
             import me.jameshunt.flow.FragmentFlowController
-            import me.jameshunt.flow.ViewId
-            import me.jameshunt.flow.promise.Promise
-            import me.jameshunt.flow.promise.then
             import me.jameshunt.flow.generated.Generated${flowName}Controller.${flowName}FlowState.*
             $variables
         """
