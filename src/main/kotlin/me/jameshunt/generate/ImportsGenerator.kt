@@ -29,6 +29,7 @@ class ImportsGenerator {
 
             import com.inmotionsoftware.promisekt.Promise
             import com.inmotionsoftware.promisekt.map
+            import com.inmotionsoftware.promisekt.catch
             import me.jameshunt.flow.FragmentFlowController
             import me.jameshunt.flow.generated.Generated${flowName}Controller.${flowName}FlowState.*
             $variables
