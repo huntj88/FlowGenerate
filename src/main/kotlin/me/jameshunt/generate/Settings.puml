@@ -1,7 +1,6 @@
 @startuml
 
 Settings : val blah: java.util.concurrent.atomic.AtomicInteger?
-Done : val outputTest: String
 
 [*] -> Settings
 

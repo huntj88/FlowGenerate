@@ -18,6 +18,7 @@ class FlowCodeGenerator(private val file: File) {
         val abstractMethods = MethodsGenerator().generateAbstract(states)
         val startMethod = MethodsGenerator().generateStart(states, input)
 
+        val extensionToMethods = MethodsGenerator().generateExtensionToMethods(states)
         val toMethods = MethodsGenerator().generateToMethods(states)
 
         return """
@@ -26,6 +27,7 @@ class FlowCodeGenerator(private val file: File) {
             $sealedClass
             $abstractMethods
             $startMethod
+            $extensionToMethods
             $toMethods
             }
         """
