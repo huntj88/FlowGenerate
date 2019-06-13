@@ -63,20 +63,25 @@ class MethodsGenerator {
         }.joinToString("\n")
     }
 
-    fun generateToMethods(states: Set<State>): String {
+    fun generateToMethods(states: Set<State>, isAndroid: Boolean): String {
         return states
             .filter { it.name != "[*]" }
             .filter { it.name != "Done" }
             .filter { it.name != "Back" }
             .joinToString("") {
-                it.generateToMethod(states.fromWhen(it))
+                it.generateToMethod(states.fromWhen(it), isAndroid)
             }
     }
 
-    private fun State.generateToMethod(fromWhen: String): String {
+    private fun State.generateToMethod(fromWhen: String, isAndroid: Boolean): String {
+
+        val extra = when(isAndroid) {
+            true -> "\ncurrentState = state\n"
+            false -> ""
+        }
+
         return """
-            private fun to${this.name}(state: ${this.name}) {
-                currentState = state
+            private fun to${this.name}(state: ${this.name}) { $extra
                 on${this.name}(state).map {
                     when(it) {
                         $fromWhen

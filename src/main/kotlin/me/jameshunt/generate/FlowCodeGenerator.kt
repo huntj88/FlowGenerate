@@ -4,22 +4,21 @@ import java.io.File
 
 class FlowCodeGenerator(private val file: File) {
 
-    fun generate(): String {
+    fun generate(isAndroid: Boolean): String {
         val (states, inputOutput) = PumlParser().parse(file)
         val (input, output) = inputOutput
 
         val flowName = file.nameWithoutExtension
 
         val imports = ImportsGenerator().generate(flowName, states)
+        val generatedClass = ClassSignatureGenerator().generate(flowName, input, output, isAndroid)
 
-        val generatedClass =
-            "abstract class Generated${flowName}Controller: FragmentFlowController<$input, $output>() {"
         val sealedClass = SealedClassGenerator().generate(flowName, states, output)
         val abstractMethods = MethodsGenerator().generateAbstract(states)
         val startMethod = MethodsGenerator().generateStart(states, input)
 
         val extensionToMethods = MethodsGenerator().generateExtensionToMethods(states)
-        val toMethods = MethodsGenerator().generateToMethods(states)
+        val toMethods = MethodsGenerator().generateToMethods(states, isAndroid)
 
         return """
             $imports

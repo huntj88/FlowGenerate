@@ -3,6 +3,7 @@ package me.jameshunt.generate
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginConvention
 import java.io.File
 
 class FlowGeneratePlugin : Plugin<Project> {
@@ -24,14 +25,24 @@ class FlowGeneratePlugin : Plugin<Project> {
     }
 
     private fun addSourceSet(project: Project) {
-        val sourceSets = (project.extensions.getByName("android") as BaseExtension).sourceSets.asMap
-        sourceSets.forEach { sourceSetName, sourceSet ->
 
+        // android
+        project.extensions.findByName("android")
+            ?.let { it as BaseExtension }?.sourceSets?.asMap?.forEach { sourceSetName, sourceSet ->
             if (sourceSetName == "main") {
                 sourceSet.java.srcDirs(File("./build/generated/source/flow/src"))
                 return@forEach
             }
         }
+
+        // non android
+        project.convention.findPlugin(JavaPluginConvention::class.java)?.sourceSets?.asMap?.forEach { sourceSetName, sourceSet ->
+            if (sourceSetName == "main") {
+                sourceSet.java.srcDirs(File("./build/generated/source/flow/src"))
+                return@forEach
+            }
+        }
+
     }
 }
 

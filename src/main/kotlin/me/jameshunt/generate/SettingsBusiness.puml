@@ -1,0 +1,21 @@
+@startuml
+
+Settings : val blah: java.util.concurrent.atomic.AtomicInteger?
+
+[*] -> Settings
+
+Settings --> UserSettings
+Settings --> Logout
+
+Settings --> NotLoggedIn
+UserSettings --> Settings
+
+Logout --> Settings
+
+NotLoggedIn --> Login
+
+Login --> Settings
+
+Settings -> Done
+
+@enduml
