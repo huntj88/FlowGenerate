@@ -10,7 +10,7 @@ class FlowCodeGenerator(private val file: File) {
 
         val flowName = file.nameWithoutExtension
 
-        val imports = ImportsGenerator().generate(flowName, states)
+        val imports = ImportsGenerator().generate(flowName, states, isAndroid)
         val generatedClass = ClassSignatureGenerator().generate(flowName, input, output, isAndroid)
 
         val sealedClass = SealedClassGenerator().generate(flowName, states, output)

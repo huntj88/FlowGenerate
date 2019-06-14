@@ -2,7 +2,7 @@ package me.jameshunt.generate
 
 class ImportsGenerator {
 
-    fun generate(flowName: String, states: Set<State>): String {
+    fun generate(flowName: String, states: Set<State>, isAndroid: Boolean): String {
 
         //todo: add the rest of kotlin builtIns
         //todo: make types with generics work
@@ -24,13 +24,18 @@ class ImportsGenerator {
             .flatMap { it.imports }.toSet()
             .joinToString("\n") { "import $it" }
 
+        val baseType = when(isAndroid) {
+            true -> "import me.jameshunt.flow.FragmentFlowController"
+            false -> "import me.jameshunt.flow.BusinessFlowController"
+        }
+
         return """
             package me.jameshunt.flow.generated
 
             import com.inmotionsoftware.promisekt.Promise
             import com.inmotionsoftware.promisekt.map
             import com.inmotionsoftware.promisekt.catch
-            import me.jameshunt.flow.FragmentFlowController
+            $baseType
             import me.jameshunt.flow.generated.Generated${flowName}Controller.${flowName}FlowState.*
             $variables
         """
