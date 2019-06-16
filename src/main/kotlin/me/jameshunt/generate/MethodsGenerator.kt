@@ -86,7 +86,10 @@ class MethodsGenerator {
                     when(it) {
                         $fromWhen
                     }
-                }.catch { it.printStackTrace() }
+                }.catch {
+                    it.printStackTrace()
+                    super.onCatch(it)
+                }
             }
         """
 
