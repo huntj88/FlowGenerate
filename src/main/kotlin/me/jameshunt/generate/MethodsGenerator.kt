@@ -69,7 +69,7 @@ class MethodsGenerator {
             .filter { it.name != "Done" }
             .filter { it.name != "Back" }
             .joinToString("") {
-                it.generateToMethod(states.fromWhen(it), isAndroid)
+                it.generateToMethod(states.fromWhen(it, isAndroid), isAndroid)
             }
     }
 
@@ -93,18 +93,26 @@ class MethodsGenerator {
 //        else -> throw IllegalStateException("Illegal transition from: ${"$"}state, to: ${"$"}it")
     }
 
-    private fun Set<State>.fromWhen(state: State): String {
+    private fun Set<State>.fromWhen(state: State, isAndroid: Boolean): String {
 
-        fun String.handleBackAndDone(): String {
-            return when (this) {
-                "Back" -> "super.onDone(FlowResult.Back)"
-                "Done" -> "super.onDone(FlowResult.Completed(it.output))"
-                else -> "to$this(it)"
-            }
+        fun String.handleBackAndDoneAndroid(): String = when (this) {
+            "Back" -> "super.onDone(FlowResult.Back)"
+            "Done" -> "super.onDone(FlowResult.Completed(it.output))"
+            else -> "to$this(it)"
+        }
+
+        fun String.handleDone(): String = when (this) {
+            "Done" -> "super.onDone(it.output)"
+            else -> "to$this(it)"
+        }
+
+        fun String.handleSpecialCases(): String = when(isAndroid) {
+            true -> handleBackAndDoneAndroid()
+            false -> handleDone()
         }
 
         return this.filter { it.from.contains(state.name) }.joinToString("\n") {
-            "is ${it.name} -> ${it.name.handleBackAndDone()}"
+            "is ${it.name} -> ${it.name.handleSpecialCases()}"
         }
     }
 }
