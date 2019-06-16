@@ -25,7 +25,10 @@ class ImportsGenerator {
             .joinToString("\n") { "import $it" }
 
         val baseType = when(isAndroid) {
-            true -> "import me.jameshunt.flow.FragmentFlowController"
+            true -> """
+                import me.jameshunt.flow.FragmentFlowController
+                import me.jameshunt.flow.FlowResult
+                """
             false -> "import me.jameshunt.flow.BusinessFlowController"
         }
 

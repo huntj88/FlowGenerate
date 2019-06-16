@@ -97,8 +97,8 @@ class MethodsGenerator {
 
         fun String.handleBackAndDone(): String {
             return when (this) {
-                "Back" -> "it.onBack()"
-                "Done" -> "it.onDone()"
+                "Back" -> "super.onDone(FlowResult.Back)"
+                "Done" -> "super.onDone(FlowResult.Completed(it.output))"
                 else -> "to$this(it)"
             }
         }
