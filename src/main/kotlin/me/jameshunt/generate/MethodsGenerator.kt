@@ -69,19 +69,13 @@ class MethodsGenerator {
             .filter { it.name != "Done" }
             .filter { it.name != "Back" }
             .joinToString("") {
-                it.generateToMethod(states.fromWhen(it, isAndroid), isAndroid)
+                it.generateToMethod(states.fromWhen(it, isAndroid))
             }
     }
 
-    private fun State.generateToMethod(fromWhen: String, isAndroid: Boolean): String {
-
-        val extra = when(isAndroid) {
-            true -> "\ncurrentState = state\n"
-            false -> ""
-        }
-
+    private fun State.generateToMethod(fromWhen: String): String {
         return """
-            private fun to${this.name}(state: ${this.name}) { $extra
+            private fun to${this.name}(state: ${this.name}) {
                 on${this.name}(state).map {
                     when(it) {
                         $fromWhen
@@ -92,7 +86,6 @@ class MethodsGenerator {
                 }
             }
         """
-
 //        else -> throw IllegalStateException("Illegal transition from: ${"$"}state, to: ${"$"}it")
     }
 
