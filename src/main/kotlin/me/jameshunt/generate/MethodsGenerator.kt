@@ -8,7 +8,7 @@ class MethodsGenerator {
             .filter { it.name != "Done" }
             .filter { it.name != "Back" }
             .joinToString("\n") {
-                "protected abstract fun on${it.name}(state: ${it.name}): Promise<From${it.name}>"
+                "protected abstract suspend fun on${it.name}(state: ${it.name}): From${it.name}"
             }
     }
 
@@ -24,7 +24,7 @@ class MethodsGenerator {
         }
 
         return """
-            final override fun onStart(state: InitialState<$input>) {
+            final override suspend fun onStart(state: InitialState<$input>) {
                 $impl
             }
         """
@@ -57,7 +57,7 @@ class MethodsGenerator {
                         }
                     }
 
-                    "protected fun $from.to${state.name}($variables): Promise<From$from> = Promise.value($constructor)\n"
+                    "protected fun $from.to${state.name}($variables): From$from = $constructor\n"
                 }
 
         }.joinToString("\n")
@@ -75,14 +75,16 @@ class MethodsGenerator {
 
     private fun State.generateToMethod(fromWhen: String): String {
         return """
-            private fun to${this.name}(state: ${this.name}) {
-                on${this.name}(state).map {
-                    when(it) {
-                        $fromWhen
+            private suspend fun to${this.name}(state: ${this.name}) {
+                try {
+                    on${this.name}(state).let {
+                        when(it) {
+                            $fromWhen
+                        }
                     }
-                }.catch {
-                    it.printStackTrace()
-                    super.onCatch(it)
+                } catch (t: Throwable) {
+                    t.printStackTrace()
+                    super.onCatch(t)
                 }
             }
         """

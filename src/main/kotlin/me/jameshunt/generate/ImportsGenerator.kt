@@ -35,9 +35,6 @@ class ImportsGenerator {
         return """
             package me.jameshunt.flow.generated
 
-            import com.inmotionsoftware.promisekt.Promise
-            import com.inmotionsoftware.promisekt.map
-            import com.inmotionsoftware.promisekt.catch
             $baseType
             import me.jameshunt.flow.generated.Generated${flowName}Controller.${flowName}FlowState.*
             $variables
