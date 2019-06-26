@@ -77,7 +77,7 @@ class MethodsGenerator {
         return """
             private suspend fun to${this.name}(state: ${this.name}) {
                 try {
-                    on${this.name}(state).let {
+                    coroutineScope { async { on${this.name}(state) } }.await().let {
                         when(it) {
                             $fromWhen
                         }

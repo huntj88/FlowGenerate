@@ -35,6 +35,8 @@ class ImportsGenerator {
         return """
             package me.jameshunt.flow.generated
 
+            import kotlinx.coroutines.async
+            import kotlinx.coroutines.coroutineScope
             $baseType
             import me.jameshunt.flow.generated.Generated${flowName}Controller.${flowName}FlowState.*
             $variables
