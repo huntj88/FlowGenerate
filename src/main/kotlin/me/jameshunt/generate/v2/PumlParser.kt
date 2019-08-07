@@ -1,9 +1,5 @@
 package me.jameshunt.generate.v2
 
-import me.jameshunt.generate.isData
-import me.jameshunt.generate.isTransition
-import java.io.File
-
 private val importRegex = "import [\\S]+".toRegex()
 private val dataRegex = "([a-zA-Z]+)\\s*:\\s*((val|var) [a-zA-Z]+: \\S+)".toRegex()
 private val transitionRegex = "(\\S+)\\s*[-]+>\\s*(\\S+)".toRegex()
@@ -20,8 +16,8 @@ class PumlParser {
         data class Transition(val line: String) : LineType()
     }
 
-    fun parse(file: File): FlowData {
-        val lines = file.readLines().mapNotNull {
+    fun parse(fileAsString: String): FlowData {
+        val lines = fileAsString.lines().mapNotNull {
             when {
                 it.isTransition() -> LineType.Transition(it)
                 it.isData() -> LineType.Data(it)
