@@ -1,7 +1,5 @@
 package me.jameshunt.generate
 
-import me.jameshunt.generate.v2.PumlParser
-import org.junit.Assert.*
 import org.junit.Test
 
 class FlowGeneratorTest {

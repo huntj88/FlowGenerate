@@ -16,7 +16,7 @@ class MethodsGenerator {
         states: Set<State>,
         input: String
     ): String {
-        val from = states.firstOrNull { it.from.contains("[*]") }?.name!!
+        val from = states.firstOrNull { it.transitionFrom.contains("[*]") }?.name!!
 
         val impl = when (input == "Unit") {
             true -> "to$from($from)"
@@ -32,14 +32,11 @@ class MethodsGenerator {
 
     fun generateExtensionToMethods(states: Set<State>): String {
         return states.map { state ->
-            state.from
+            state.transitionFrom
                 .filter { it != "[*]" }
                 .joinToString("\n") { from ->
-                    val variables = state.variables.joinToString(", ") { variable ->
-                        variable.removePrefix("val ").removePrefix("var ")
-                    }
-
-                    val constructor = when (state.variables.isEmpty()) {
+                    val variable = state.variable?.removePrefix("val ")?.removePrefix("var ")?: ""
+                    val constructor = when (state.variable == null) {
                         true -> {
                             if(state.name == "Done") {
                                 "Done(Unit)"
@@ -49,7 +46,7 @@ class MethodsGenerator {
                         }
                         false -> {
                             val variableNamesRegex = "(\\S+):\\s*\\S+".toRegex()
-                            val namesWithoutType = variableNamesRegex.findAll(variables)
+                            val namesWithoutType = variableNamesRegex.findAll(variable)
                                 .map { it.groupValues[1] }
                                 .joinToString(",")
 
@@ -57,7 +54,7 @@ class MethodsGenerator {
                         }
                     }
 
-                    "protected fun $from.to${state.name}($variables): Promise<From$from> = Promise.value($constructor)\n"
+                    "protected fun $from.to${state.name}($variable): Promise<From$from> = Promise.value($constructor)\n"
                 }
 
         }.joinToString("\n")
@@ -107,7 +104,7 @@ class MethodsGenerator {
             false -> handleDone()
         }
 
-        return this.filter { it.from.contains(state.name) }.joinToString("\n") {
+        return this.filter { it.transitionFrom.contains(state.name) }.joinToString("\n") {
             "is ${it.name} -> ${it.name.handleSpecialCases()}"
         }
     }

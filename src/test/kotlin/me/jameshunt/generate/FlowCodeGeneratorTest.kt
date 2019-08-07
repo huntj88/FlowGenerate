@@ -26,10 +26,4 @@ class FlowCodeGeneratorTest {
         assertTrue("Render : val data: me.jameshunt.flow3.summary.SummaryInput".isData())
         assertFalse("GatherData val blah: Book".isData())
     }
-
-    @Test
-    fun packageNameTest() {
-        "val data: me.jameshunt.flow3.summary.SummaryInput".getPackage().let(::println)
-        assertTrue("val data: me.jameshunt.flow3.summary.SummaryInput".getPackage() == "me.jameshunt.flow3.summary.SummaryInput")
-    }
 }
