@@ -1,6 +1,8 @@
+import java.util.concurrent.atomic.AtomicInteger
+
 @startuml
 
-Settings : val blah: java.util.concurrent.atomic.AtomicInteger?
+Settings : val blah: AtomicInteger?
 
 [*] -> Settings
 
