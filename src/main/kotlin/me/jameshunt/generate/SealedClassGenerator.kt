@@ -23,14 +23,13 @@ class SealedClassGenerator {
     private fun Set<State>.generateStates(flowName: String, output: String): String {
 
         fun State.postFix(): String {
-            val from = this.from.filter { it != "[*]" }.joinToString(", ") { "From$it" }.let {
+            val from = this.transitionFrom.filter { it != "[*]" }.joinToString(", ") { "From$it" }.let {
                 if (it.isNotBlank()) {
                     ", $it"
                 } else ""
             }
             return ": ${flowName}FlowState()$from".let {
                 when (this.name) {
-                    "Back" -> "$it, BackState"
                     "Done" -> "$it, DoneState<$output>"
                     else -> it
                 }
@@ -41,12 +40,12 @@ class SealedClassGenerator {
             when (it.name == "Done") {
                 true -> "data class ${it.name}(override val output: $output)${it.postFix()}"
                 false -> {
-                    when (it.variables.isEmpty()) {
+                    when (it.variable == null) {
                         true -> {
                             "object ${it.name}${it.postFix()}"
                         }
                         false -> {
-                            "data class ${it.name}(${it.variables.joinToString(",")})${it.postFix()}"
+                            "data class ${it.name}(${it.variable})${it.postFix()}"
                         }
                     }
                 }

@@ -2,20 +2,24 @@ package me.jameshunt.generate
 
 class ImportsGenerator {
 
-    fun generate(flowName: String, states: Set<State>): String {
-       val variables =  states
-            .flatMap { it.imports }.toSet()
-            .joinToString("\n") { "import $it" }
+    fun generate(flowName: String, imports: Set<String>, isAndroid: Boolean): String {
+        val baseType = when(isAndroid) {
+            true -> """
+                import me.jameshunt.flow.FragmentFlowController
+                import me.jameshunt.flow.FlowResult
+                """
+            false -> "import me.jameshunt.flow.BusinessFlowController"
+        }
 
         return """
             package me.jameshunt.flow.generated
 
-            import me.jameshunt.flow.FragmentFlowController
-            import me.jameshunt.flow.ViewId
-            import me.jameshunt.flow.promise.Promise
-            import me.jameshunt.flow.promise.then
+            import com.inmotionsoftware.promisekt.Promise
+            import com.inmotionsoftware.promisekt.map
+            import com.inmotionsoftware.promisekt.catch
+            $baseType
             import me.jameshunt.flow.generated.Generated${flowName}Controller.${flowName}FlowState.*
-            $variables
+            ${imports.joinToString("\n")}
         """
     }
 }
