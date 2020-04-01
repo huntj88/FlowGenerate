@@ -30,7 +30,6 @@ class SealedClassGenerator {
             }
             return ": ${flowName}FlowState()$from".let {
                 when (this.name) {
-                    "Back" -> "$it, BackState"
                     "Done" -> "$it, DoneState<$output>"
                     else -> it
                 }
